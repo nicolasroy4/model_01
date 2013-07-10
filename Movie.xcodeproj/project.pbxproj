@@ -33,7 +33,7 @@
 		37987C251763B78B002BB87F /* Security.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 37987C241763B78B002BB87F /* Security.framework */; };
 		37987C271763B795002BB87F /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 37987C261763B795002BB87F /* ImageIO.framework */; };
 		37E2D57E1764BB1D00AAD22B /* NetworkEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = 37E2D57D1764BB1C00AAD22B /* NetworkEngine.m */; };
-		37E2D5841764BDA600AAD22B /* MovieAPI.m in Sources */ = {isa = PBXBuildFile; fileRef = 37E2D5831764BDA600AAD22B /* MovieAPI.m */; };
+		B2C35F54178D822A00678191 /* API.m in Sources */ = {isa = PBXBuildFile; fileRef = B2C35F53178D822A00678191 /* API.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -80,11 +80,11 @@
 		37987C261763B795002BB87F /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		37E2D57C1764BB1C00AAD22B /* NetworkEngine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NetworkEngine.h; sourceTree = "<group>"; };
 		37E2D57D1764BB1C00AAD22B /* NetworkEngine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NetworkEngine.m; sourceTree = "<group>"; };
-		37E2D5821764BDA600AAD22B /* MovieAPI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MovieAPI.h; sourceTree = "<group>"; };
-		37E2D5831764BDA600AAD22B /* MovieAPI.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MovieAPI.m; sourceTree = "<group>"; };
 		37E2D5851764BEA800AAD22B /* Macros.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Macros.h; sourceTree = "<group>"; };
 		37E2D5871764D14E00AAD22B /* JSONKit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = JSONKit.h; path = "../../Downloads/JSONKit-master/JSONKit.h"; sourceTree = "<group>"; };
 		37E2D5881764D14E00AAD22B /* JSONKit.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = JSONKit.m; path = "../../Downloads/JSONKit-master/JSONKit.m"; sourceTree = "<group>"; };
+		B2C35F52178D822A00678191 /* API.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = API.h; sourceTree = "<group>"; };
+		B2C35F53178D822A00678191 /* API.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = API.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -225,8 +225,8 @@
 			children = (
 				37E2D57C1764BB1C00AAD22B /* NetworkEngine.h */,
 				37E2D57D1764BB1C00AAD22B /* NetworkEngine.m */,
-				37E2D5821764BDA600AAD22B /* MovieAPI.h */,
-				37E2D5831764BDA600AAD22B /* MovieAPI.m */,
+				B2C35F52178D822A00678191 /* API.h */,
+				B2C35F53178D822A00678191 /* API.m */,
 			);
 			name = API;
 			sourceTree = "<group>";
@@ -320,7 +320,7 @@
 				37987C1E1763B735002BB87F /* MKNetworkOperation.m in Sources */,
 				37987C1F1763B735002BB87F /* Reachability.m in Sources */,
 				37E2D57E1764BB1D00AAD22B /* NetworkEngine.m in Sources */,
-				37E2D5841764BDA600AAD22B /* MovieAPI.m in Sources */,
+				B2C35F54178D822A00678191 /* API.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

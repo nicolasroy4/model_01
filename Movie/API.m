@@ -1,29 +1,29 @@
 //
-//  MovieAPI.m
+//  API.m
 //  Movie
 //
 //  Created by Nicolas Roy on 09/06/13.
 //  Copyright (c) 2013 Nicolas Roy. All rights reserved.
 //
 
-#import "MovieAPI.h"
+#import "API.h"
 
-@interface MovieAPI ()
+@interface API ()
 
 @property (nonatomic, strong) NSString *key;
 
 @end
 
-@implementation MovieAPI
+@implementation API
 
 
 /*----------------------------------------------------------------------------*/
 #pragma mark - Shared instance
 /*----------------------------------------------------------------------------*/
 
-static MovieAPI *sharedInstance = nil;
+static API *sharedInstance = nil;
 
-+ (MovieAPI *)shared
++ (API *)shared
 {
     if (sharedInstance != nil) {
         return sharedInstance;
@@ -59,7 +59,7 @@ static MovieAPI *sharedInstance = nil;
 
 - (void)addAuthHeader:(id)request
 {
-        [request addHeaders:@{@"accept":@"*/*"}];
+    [request addHeaders:@{@"accept":@"*/*"}];
 }
 
 
@@ -70,8 +70,8 @@ static MovieAPI *sharedInstance = nil;
 - (NSString *)baseURL
 {
     NSString *protocol = @"http";
-    NSString *domain = @"api.themoviedb.org";
-    return  [NSString stringWithFormat:@"%@://%@/3/", protocol, domain];
+    NSString *domain = @"api.programme-tv.net";
+    return  [NSString stringWithFormat:@"%@://%@/1326279455-10/", protocol, domain];
 }
 
 - (NSString *)controller:(NSString *)controller
@@ -80,9 +80,7 @@ static MovieAPI *sharedInstance = nil;
     NSMutableString *apiURL = [self baseURL].mutableCopy;
     
     [apiURL appendString:controller];
-    [apiURL appendString:@"?api_key="];
-    [apiURL appendString:self.key];
-
+    [apiURL appendString:@"/?"];    
     
     if (arguments.count) {
         
@@ -91,7 +89,7 @@ static MovieAPI *sharedInstance = nil;
             id arg = arguments[key];
             if (!arg || arg == [NSNull null]) continue;
             
-            NSString *s = [MovieAPI objectToString:arg];
+            NSString *s = [API objectToString:arg];
             if (s) [apiURL appendFormat:@"&%@=%@",key,s];
         }
     }
@@ -126,7 +124,7 @@ static MovieAPI *sharedInstance = nil;
         
         for (id o in arg) {
             
-            NSString *s = [MovieAPI objectToString:o];
+            NSString *s = [API objectToString:o];
             if (s) {
                 if (ms.length) [ms appendString:@","];
                 [ms appendString:s];
@@ -145,26 +143,25 @@ static MovieAPI *sharedInstance = nil;
 #pragma mark - URLs
 /*----------------------------------------------------------------------------*/
 
-+ (NSString *)images:(NSNumber *)uid
++ (NSString *)newsListCount:(NSNumber *)count category:(NSNumber *)idCat
 {
-    return [[MovieAPI shared]
-            controller:S(@"movie/%d/images",uid.integerValue)
-            arguments:nil];
-}
-
-+ (NSString *)topMovies:(NSNumber*) page
-{
-    NSDictionary *args = @{@"page": page,
-                           @"vote_count.gte": @"50",
-                           @"vote_average.gte":@"8.0",
-                           @"release_date.gte": @"1990-01-01"};
+    NSDictionary *args = @{@"count": count,
+                           @"idCategory": idCat
+                           };
     
-    return [[MovieAPI shared]
-            controller:S(@"discover/movie")
+    return [[API shared]
+            controller:@"getNews"
             arguments:args];
 }
 
-
++ (NSString *)newsDetail:(NSNumber *)idCat
+{
+    NSDictionary *args = @{@"id": idCat};
+    
+    return [[API shared]
+            controller:@"getNews"
+            arguments:args];
+}
 
 /*----------------------------------------------------------------------------*/
 #pragma mark - Response
@@ -206,7 +203,7 @@ static MovieAPI *sharedInstance = nil;
         
         [topMoviesInfo setObject:rawObjects[@"total_pages"] forKey:@"total_pages"];
         [topMoviesInfo setObject:moviesId forKey:@"movies"];
-
+        
         return topMoviesInfo;
     }
     @catch (NSException *exception) {
@@ -219,7 +216,7 @@ static MovieAPI *sharedInstance = nil;
 {
     
     NSDictionary *rawObjects = [self parseJSONString:data];
-
+    
     NSArray *myData = [rawObjects objectForKey:@"backdrops"];
     if (!myData) {
         // parsing error

@@ -1,8 +1,8 @@
 //
-//  MovieAPI.h
+//  API.h
 //  Movie
 //
-//  Created by Nicolas Roy on 09/06/13.
+//  Created by Nicolas ROY on 10/07/13.
 //  Copyright (c) 2013 Nicolas Roy. All rights reserved.
 //
 
@@ -14,14 +14,15 @@ typedef enum DataType : NSInteger {
     DataTypeDict
 } DataType;
 
-@interface MovieAPI : NSObject
 
-+ (MovieAPI *)shared;
+@interface API : NSObject
+
++ (API *)shared;
 
 - (void)addAuthHeader:(id)request;
 
-+ (NSString *)images:(NSNumber *)uid;
-+ (NSString *)topMovies:(NSNumber*) total_pages;
++ (NSString *)newsListCount:(NSNumber *)count category:(NSNumber *)idCat;
++ (NSString *)newsDetail:(NSNumber *)idCat;
 
 + (NSArray *)parseImages:(id)data;
 + (NSDictionary *)parseTopMovies:(id)data;

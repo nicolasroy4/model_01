@@ -17,7 +17,7 @@
     self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
     // Override point for customization after application launch.
     
-    [MovieAPI shared];
+    [API shared];
 
     
     self.viewController = [[ViewController alloc] initWithNibName:@"ViewController" bundle:nil];

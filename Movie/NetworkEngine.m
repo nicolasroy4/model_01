@@ -33,7 +33,7 @@
      params:params
      httpMethod:httpMethod];
     
-     [[MovieAPI shared] addAuthHeader:op];
+     [[API shared] addAuthHeader:op];
     
     return op;
 }
