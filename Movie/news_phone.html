@@ -1,0 +1,107 @@
+<!DOCTYPE>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=%%%width%%%, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+        <title>%%%title%%%</title>
+        <style type="text/css">
+            * {
+                -webkit-touch-callout: none;
+                -webkit-user-select: none;
+            }
+            body {
+                background-color: transparent;
+                color: #363636;
+                font-family: Helvetica;
+                font-size: 15px;
+                margin: 0;
+                padding: 15px;
+            }
+            a { color:#000; }
+            h1 { 
+                font-size:1.35em; 
+                text-shadow:0 1px 0 rgba(255,255,255,0.7);
+                margin: 0px 0 4px 0;
+                clear: both;
+            }
+            
+            .date { 
+                font-size:12px;
+                text-shadow:0 1px 0 rgba(255,255,255,0.7); 
+            }
+            .date { color:#858585; font-size: 11px; margin: 0 0 8px; }
+            
+            #content { line-height:1.5em; font-size:14px; }
+            .author, .source { color:#858585; display: block; font-size: 12px; margin-top: 4px; font-weight: normal; font-style: italic; }
+            .source { text-align: right; margin-top: 20px; margin-bottom: 0;}
+            .image { 
+                text-align: center; 
+                margin:20px auto;
+                padding:3px; 
+                background-color:#fff; 
+                width: 260px;
+                -webkit-border-radius:3px;  
+                -webkit-box-shadow:0 1px 2px #b7b7b7;
+            }
+            .image > img {
+                width: 100%;
+                height: auto;
+                
+            }
+            .image .diapo {
+                background-color: #000000;
+                font-weight: bold;
+                font-size: 13px;
+                text-align: center;
+                line-height: 37px;
+                color: #ffffff;
+            }
+            .image .diapo > img {
+                vertical-align: -3px;
+                margin-right: 5px;
+            }
+            .link-diapo { text-decoration: none; }
+            
+            /* affichage ipad */
+            @media (min-width: 500px) {
+                body {
+                    padding: 25px;
+                }
+                .small-title { font-size: 14px; }
+                .date { font-size: 12px; }
+                h1 {
+                    font-size: 1.65em;
+                }
+                .author { font-size: 13px; }
+                .image { margin:30px auto; width: 300px; }
+                .image .diapo { font-size: 16px; line-height: 42px;}
+                
+                #content { font-size: 15px; }
+            }
+        </style>
+    </head>
+    
+    <body>
+        <h1>%%%title%%%</h1>
+        <p class="date">%%%date%%%</p>
+        <a %%%hrefimage%%% class="link-diapo">
+            <div class="image">
+                <img src="%%%img%%%" alt="%%%title%%%"/>
+                %%%diapo%%%
+            </div>
+        </a>
+        <div id="content" style="font-size:%%%size%%%px;">
+            <p>%%%chapo%%%</p>
+            <p>%%%html%%%</p>
+            <p class="source">%%%author%%%</p>
+        </div>
+        
+        <script type="text/javascript">
+            function changeFontSize(element,step)
+            {
+                document.getElementById(element).style.fontSize =  (parseInt(document.getElementById(element).style.fontSize,10) + parseInt(step,10)) + 'px';
+            }
+        </script>
+    </body>
+</html>
