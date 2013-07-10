@@ -180,63 +180,30 @@ static API *sharedInstance = nil;
 }
 
 
-+ (NSDictionary *)parseTopMovies:(id)data
++ (NSArray *)parseNewsList:(id)data
 {
-    
     NSDictionary *rawObjects = [self parseJSONString:data];
     
-    NSArray *myData = rawObjects[@"results"];
-    if (!myData) {
-        // parsing error
-        return nil;
-    }
-    
     @try {
-        
-        NSMutableArray *moviesId = [[NSMutableArray alloc] init];
-        for (NSDictionary *movieInfo in myData) {
-            NSString *filePath = [movieInfo objectForKey:@"id"];
-            [moviesId addObject:filePath];
-        }
-        
-        NSMutableDictionary *topMoviesInfo = [[NSMutableDictionary alloc] init];
-        
-        [topMoviesInfo setObject:rawObjects[@"total_pages"] forKey:@"total_pages"];
-        [topMoviesInfo setObject:moviesId forKey:@"movies"];
-        
-        return topMoviesInfo;
+        NSArray *myData = [rawObjects objectForKey:@"data"];
+        return myData;
     }
     @catch (NSException *exception) {
         return nil;
     }
 }
 
-
-+ (NSArray *)parseImages:(id)data
++ (NSDictionary *)parseNewsDetail:(id)data
 {
-    
     NSDictionary *rawObjects = [self parseJSONString:data];
     
-    NSArray *myData = [rawObjects objectForKey:@"backdrops"];
-    if (!myData) {
-        // parsing error
-        return nil;
-    }
-    
     @try {
-        
-        NSMutableArray *files = [[NSMutableArray alloc] init];
-        for (NSDictionary *imageInfo in myData) {
-            NSString *filePath = [imageInfo objectForKey:@"file_path"];
-            [files addObject:filePath];
-        }
-        
-        return files;
+        NSDictionary *myData = [rawObjects objectForKey:@"data"];
+        return myData;
     }
     @catch (NSException *exception) {
         return nil;
     }
 }
-
 
 @end

@@ -24,7 +24,7 @@ typedef enum DataType : NSInteger {
 + (NSString *)newsListCount:(NSNumber *)count category:(NSNumber *)idCat;
 + (NSString *)newsDetail:(NSNumber *)idCat;
 
-+ (NSArray *)parseImages:(id)data;
-+ (NSDictionary *)parseTopMovies:(id)data;
++ (NSArray *)parseNewsList:(id)data;
++ (NSDictionary *)parseNewsDetail:(id)data;
 
 @end

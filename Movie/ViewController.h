@@ -8,9 +8,15 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ViewController : UIViewController
+@class MKHorizMenu;
+@interface ViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 {
-    IBOutlet UIImageView *movieImage;
+    IBOutlet UITableView *newsListTableView;
+    IBOutlet UIView *footerView;
+    IBOutlet UIButton *buttonLoadMore;
+
 }
+@property (nonatomic, strong) IBOutlet MKHorizMenu *horizMenu;
+@property (nonatomic, strong) NSArray* model;
 
 @end

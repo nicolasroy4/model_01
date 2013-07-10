@@ -19,9 +19,10 @@
     
     [API shared];
 
-    
     self.viewController = [[ViewController alloc] initWithNibName:@"ViewController" bundle:nil];
-    self.window.rootViewController = self.viewController;
+    self.navController = [[UINavigationController alloc] initWithRootViewController:self.viewController];
+    [[self window] setRootViewController:self.navController];
+
     [self.window makeKeyAndVisible];
     return YES;
 }
