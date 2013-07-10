@@ -19,6 +19,6 @@
 #define STRETCH(image, width, height) [[UIImage imageNamed:image] stretchableImageWithLeftCapWidth:width topCapHeight:height]
 
 #define C(r,g,b,a) [UIColor colorWithRed:r/255.f green:g/255.f blue:b/255.f alpha:a]
-#define COLOR_BLACK      C( 97, 97, 97, 1)
-#define COLOR_DARK_GRAY  C( 48, 48, 48, 1)
+#define COLOR_BLACK      C( 48, 48, 48, 1)
+#define COLOR_DARK_GRAY  C( 97, 97, 97, 1)
 #endif

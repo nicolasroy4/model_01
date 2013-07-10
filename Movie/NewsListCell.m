@@ -10,24 +10,26 @@
 
 @implementation NewsListCell
 
-- (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier
-{
-    self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
-    if (self) {
-        // Initialization code
-    }
-    return self;
-}
-
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
 {
     [super setSelected:selected animated:animated];
 
     // Configure the view for the selected state
 }
+
 -(void)setHighlighted:(BOOL)highlighted animated:(BOOL)animated {
     [super setHighlighted:highlighted animated:animated];
     
+    if (highlighted) {
+        self.backgroundColor = PATTERN(@"CellViewNewsBg_highlighted");
+        labelDate.textColor = [UIColor whiteColor];
+        labelTitle.textColor = [UIColor whiteColor];
+    } else {
+        self.backgroundColor = PATTERN(@"CellViewNewsBg");
+        labelDate.textColor = COLOR_DARK_GRAY;
+        labelTitle.textColor = COLOR_BLACK;
+    }
+
 }
 
 /*----------------------------------------------------------------------------*/
@@ -36,22 +38,10 @@
 
 - (void)setNewsDetail:(NSDictionary *)myNews
 {
-    UIView *myBackViewH = [[UIView alloc] initWithFrame:self.frame];
-    myBackViewH.backgroundColor = PATTERN(@"CellViewNewsBg_highlighted");
-    self.selectedBackgroundView = myBackViewH;
-    
-    UIView *myBackView = [[UIView alloc] initWithFrame:self.frame];
-    myBackView.backgroundColor = PATTERN(@"CellViewNewsBg");
-    
-    self.backgroundView = myBackView;
     
     labelDate.text = [[NSString stringWithFormat:@"%@ %@", [self dateFormat:myNews[@"date"]], myNews[@"hour"]] capitalizedString];
     labelTitle.text = myNews[@"title"];
     
-    NSString *imageURL = myNews[@"img"];
-    NSData *imageData = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageURL]];
-    newsImageView.image = [UIImage imageWithData:imageData];
-    newsImageView.contentMode = UIViewContentModeScaleAspectFit;
 }
 
 - (NSString*) dateFormat:(NSString*)date

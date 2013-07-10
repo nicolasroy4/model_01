@@ -20,27 +20,43 @@
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     
-    [self loadNewsDetail];
+    self.view.backgroundColor = PATTERN(@"LightGreyBg");
+
+    [self loadNewsDetail:nil];
     
     // back button
-    
-    UIImage *bg = STRETCH(@"NavBarButtonBgBack", 14, 0);
-    [backButton setBackgroundImage:bg forState:UIControlStateNormal];
-    UIImage *bgh = STRETCH(@"NavBarButtonBgBack_highlighted", 14, 0);
-    [backButton setBackgroundImage:bgh forState:UIControlStateHighlighted];
+    UIImage *bgb = STRETCH(@"NavBarButtonBgBack", 14, 0);
+    [backButton setBackgroundImage:bgb forState:UIControlStateNormal];
+    UIImage *bgbh = STRETCH(@"NavBarButtonBgBack_highlighted", 14, 0);
+    [backButton setBackgroundImage:bgbh forState:UIControlStateHighlighted];
     [backButton addTarget:self action:@selector(goBack) forControlEvents:UIControlEventTouchUpInside];
+
+    // prev/next button
+    UIImage *bg = STRETCH(@"NavBarButtonBg", 8, 0);
+    [buttonPrev setBackgroundImage:bg forState:UIControlStateNormal];
+    [buttonNext setBackgroundImage:bg forState:UIControlStateNormal];
+    UIImage *bgh = STRETCH(@"NavBarButtonBg_highlighted", 8, 0);
+    [buttonPrev setBackgroundImage:bgh forState:UIControlStateHighlighted];
+    [buttonNext setBackgroundImage:bgh forState:UIControlStateHighlighted];
+    [buttonPrev addTarget:self action:@selector(loadPrevNews) forControlEvents:UIControlEventTouchUpInside];
+    [buttonNext addTarget:self action:@selector(loadNextNews) forControlEvents:UIControlEventTouchUpInside];
 
     
     // webview
     webView.delegate = (id<UIWebViewDelegate>)self;
-    
-    // building scrollView
-    [scrollView addSubview:contentView];
-    scrollView.contentSize = contentView.bounds.size;
 }
 
+- (void)loadPrevNews
+{
+    [self loadNewsDetail:self.newsDetail[@"prev"]];
+}
 
-- (void)loadNewsDetail
+- (void)loadNextNews
+{
+    [self loadNewsDetail:self.newsDetail[@"next"]];
+}
+
+- (void)loadNewsDetail:(NSString*)newsUrl
 {
     // Arrêt des opérations en cours
     
@@ -53,7 +69,13 @@
     NSLog(@"RELOAD");
     
     NSString *newsID = self.model[@"id"];
-    NSString *url = [API newsDetail:@(newsID.integerValue)];
+    
+    NSString *url;
+    if (!newsUrl) {
+        url = [API newsDetail:@(newsID.integerValue)];
+    } else {
+        url = newsUrl;
+    }
     
     self.operation = [NetworkEngine operationWithURL:url params:nil];
     
@@ -79,6 +101,7 @@
 - (void)loadDataNewsDetailCompletion:(NSString *)jsonString
 {
     self.newsDetail = [API parseNewsDetail:jsonString];
+    
     [self loadWebView];
     [self customizeWebView];
 }
@@ -92,17 +115,53 @@
 //------------------------------------------------------------------------------
 
 - (void)loadWebView
-{    
-    labelTitle.text = self.newsDetail[@"title"];
-    labelDate.text = self.newsDetail[@"date"];
+{
+    // get localized path for file from app bundle
+	NSString *path;
+	NSBundle *thisBundle = [NSBundle mainBundle];
+	path = [thisBundle pathForResource:@"news_phone" ofType:@"html"];
     
-    [webView loadHTMLString:self.newsDetail[@"description"] baseURL:nil];
+	// make a file: URL out of the path
+	NSError *error;
+    NSString *initialHTMLString = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error];
+    
+    NSString *titleString = self.newsDetail[@"title"];
+    NSString *dateString = self.newsDetail[@"date"];
+    NSString *chapoString = self.newsDetail[@"chapo"];
+    NSString *htmlString = self.newsDetail[@"description"];
+    NSString *authorString = self.newsDetail[@"author"];
+    NSString *imgString = self.newsDetail[@"img"];
+    
+    initialHTMLString = [initialHTMLString stringByReplacingOccurrencesOfString:@"%%%title%%%" withString:titleString];
+    initialHTMLString = [initialHTMLString stringByReplacingOccurrencesOfString:@"%%%date%%%" withString:dateString];
+    initialHTMLString = [initialHTMLString stringByReplacingOccurrencesOfString:@"%%%chapo%%%" withString:chapoString];
+    initialHTMLString = [initialHTMLString stringByReplacingOccurrencesOfString:@"%%%html%%%" withString:htmlString];
+    initialHTMLString = [initialHTMLString stringByReplacingOccurrencesOfString:@"%%%author%%%" withString:authorString];
+    initialHTMLString = [initialHTMLString stringByReplacingOccurrencesOfString:@"%%%img%%%" withString:imgString];
+    
+    initialHTMLString = [initialHTMLString stringByReplacingOccurrencesOfString:@"%%%diapo%%%" withString:@""];
 
-    NSString *imageURL = self.newsDetail[@"img"];
-    NSData *imageData = [NSData dataWithContentsOfURL:[NSURL URLWithString:imageURL]];
-    newsImageView.image = [UIImage imageWithData:imageData];
-    newsImageView.contentMode = UIViewContentModeScaleAspectFit;
+    while ([self stringBetweenString:@"[idVideo]" andString:@"[/idVideo]" in:initialHTMLString]) {
+        NSString *videoID = [self stringBetweenString:@"[idVideo]" andString:@"[/idVideo]" in:initialHTMLString];
+        NSString *videoIdLoc = [NSString stringWithFormat:@"[idVideo]%@[/idVideo]",videoID];
+        NSDictionary *videoUrls = self.newsDetail[@"videoBrightcove"];
+        initialHTMLString = [initialHTMLString stringByReplacingOccurrencesOfString:videoIdLoc withString:videoUrls[videoID]];
+    }
+    
+    [webView loadHTMLString:initialHTMLString baseURL:nil];
+}
 
+-(NSString*)stringBetweenString:(NSString*)start andString:(NSString*)end in:(NSString*)myString{
+    NSScanner* scanner = [NSScanner scannerWithString:myString];
+    [scanner setCharactersToBeSkipped:nil];
+    [scanner scanUpToString:start intoString:NULL];
+    if ([scanner scanString:start intoString:NULL]) {
+        NSString* result = nil;
+        if ([scanner scanUpToString:end intoString:&result]) {
+            return result;
+        }
+    }
+    return nil;
 }
 
 - (void)customizeWebView
@@ -123,7 +182,7 @@
 
 - (void)webViewDidStartLoad:(UIWebView *)wv
 {
-   /* spinner.alpha = 0.0f;
+    loadingView.alpha = 0.0f;
     
     [spinner startAnimating];
     
@@ -133,10 +192,9 @@
                                  UIViewAnimationOptionBeginFromCurrentState)
                      animations:^{
                          
-                         spinner.alpha = 1.0f;
+                         loadingView.alpha = 1.0f;
                          
                      } completion:^(BOOL finished) {}];
-    */
 }
 
 - (void)webView:(UIWebView *)wv didFailLoadWithError:(NSError *)error
@@ -146,19 +204,18 @@
 
 - (void)webViewDidFinishLoad:(UIWebView *)wv
 {
- /*   [UIView animateWithDuration:0.1f
+    [UIView animateWithDuration:0.1f
                           delay:0.0f
                         options:(UIViewAnimationCurveEaseInOut |
                                  UIViewAnimationOptionBeginFromCurrentState)
                      animations:^{
                          
-                         spinner.alpha = 0.0f;
+                         loadingView.alpha = 0.0f;
                          
                      } completion:^(BOOL finished) {
                          
                          [spinner stopAnimating];
                      }];
-  */
 }
 
 

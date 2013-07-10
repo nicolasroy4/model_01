@@ -10,11 +10,11 @@
 
 @interface NewsListCell : UITableViewCell
 {
-    IBOutlet UIImageView *newsImageView;
     IBOutlet UILabel *labelDate;
     IBOutlet UILabel *labelTitle;
 }
 
 @property (nonatomic, strong) NSDictionary *newsDetail;
+@property (strong, nonatomic) IBOutlet UIImageView *newsImageView;
 
 @end

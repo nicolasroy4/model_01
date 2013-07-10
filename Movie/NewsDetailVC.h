@@ -10,14 +10,13 @@
 
 @interface NewsDetailVC : UIViewController
 {
-    IBOutlet UIScrollView *scrollView;
-    IBOutlet UIView *contentView;
     
     IBOutlet UIWebView *webView;
-    IBOutlet UILabel *labelTitle;
-    IBOutlet UILabel *labelDate;
-    IBOutlet UIImageView *newsImageView;
     IBOutlet UIButton *backButton;
+    IBOutlet UIView *loadingView;
+    IBOutlet UIActivityIndicatorView *spinner;
+    IBOutlet UIButton *buttonPrev;
+    IBOutlet UIButton *buttonNext;
 }
 
 @property (nonatomic, strong) NSDictionary *model;
