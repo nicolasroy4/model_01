@@ -56,6 +56,11 @@
     [self loadNewsList:[self.model count] + 16];
 }
 
+- (void)refreshData
+{
+    [self loadNewsList:16];
+}
+
 - (void)loadNewsList:(NSInteger)count
 {
     // Arrêt des opérations en cours
@@ -128,6 +133,9 @@
         }
     }];
     
+    if (indexPath.row == [self.model count]-1){
+        [self loadMore];
+    }
     return cell;
 }
 
@@ -155,6 +163,26 @@
     [self.navigationController pushViewController:vc animated:YES];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
+/*
+- (void)scrollViewDidScroll:(UIScrollView *)aScrollView {
+    CGPoint offset = aScrollView.contentOffset;
+    CGRect bounds = aScrollView.bounds;
+    CGSize size = aScrollView.contentSize;
+    UIEdgeInsets inset = aScrollView.contentInset;
+    float y = offset.y + bounds.size.height - inset.bottom;
+    float h = size.height;
+    // NSLog(@"offset: %f", offset.y);
+    // NSLog(@"content.height: %f", size.height);
+    // NSLog(@"bounds.height: %f", bounds.size.height);
+    // NSLog(@"inset.top: %f", inset.top);
+    // NSLog(@"inset.bottom: %f", inset.bottom);
+    // NSLog(@"pos: %f of %f", y, h);
+    
+    float reload_distance = 10;
+    if(y > h + reload_distance) {
+        [self loadMore];
+    }
+}*/
 
 
 /*----------------------------------------------------------------------------*/
@@ -237,6 +265,8 @@
 {
     self.selectedIndex = index;
     [self loadNewsList:16];
+    [newsListTableView scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
+
 }
 
 
