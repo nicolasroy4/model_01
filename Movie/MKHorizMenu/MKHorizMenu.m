@@ -84,7 +84,7 @@
                             constrainedToSize:CGSizeMake(150, 28) 
                                 lineBreakMode:UILineBreakModeClip].width;
         
-        customButton.frame = CGRectMake(xPos, 7, buttonWidth + buttonPadding, 28);
+        customButton.frame = CGRectMake(xPos, 5, buttonWidth + buttonPadding, 28);
         xPos += buttonWidth;
         xPos += buttonPadding;
         [self addSubview:customButton];        
@@ -93,7 +93,7 @@
     // bretdabaker: added right padding to contentSize
     xPos += kLeftOffset;
     
-    self.contentSize = CGSizeMake(xPos, 41);    
+    self.contentSize = CGSizeMake(xPos, 38);
     [self layoutSubviews];  
 }
 
