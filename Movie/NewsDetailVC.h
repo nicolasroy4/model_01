@@ -17,6 +17,8 @@
     IBOutlet UIActivityIndicatorView *spinner;
     IBOutlet UIButton *buttonPrev;
     IBOutlet UIButton *buttonNext;
+    IBOutlet UIButton *buttonSizeDown;
+    IBOutlet UIButton *buttonSizeUp;
 }
 
 @property (nonatomic, strong) NSDictionary *model;

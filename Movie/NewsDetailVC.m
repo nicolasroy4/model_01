@@ -10,7 +10,7 @@
 
 @interface NewsDetailVC ()
 @property (nonatomic, strong) MKNetworkOperation *operation;
-
+@property (nonatomic) NSInteger policeSize;
 @end
 
 @implementation NewsDetailVC
@@ -21,7 +21,7 @@
     // Do any additional setup after loading the view from its nib.
     
     self.view.backgroundColor = PATTERN(@"LightGreyBg");
-
+    
     [self loadNewsDetail:nil];
     
     // back button
@@ -30,7 +30,7 @@
     UIImage *bgbh = STRETCH(@"NavBarButtonBgBack_highlighted", 14, 0);
     [backButton setBackgroundImage:bgbh forState:UIControlStateHighlighted];
     [backButton addTarget:self action:@selector(goBack) forControlEvents:UIControlEventTouchUpInside];
-
+    
     // prev/next button
     UIImage *bg = STRETCH(@"NavBarButtonBg", 8, 0);
     [buttonPrev setBackgroundImage:bg forState:UIControlStateNormal];
@@ -40,7 +40,14 @@
     [buttonNext setBackgroundImage:bgh forState:UIControlStateHighlighted];
     [buttonPrev addTarget:self action:@selector(loadPrevNews) forControlEvents:UIControlEventTouchUpInside];
     [buttonNext addTarget:self action:@selector(loadNextNews) forControlEvents:UIControlEventTouchUpInside];
-
+    
+    // size up / size down  buttons
+    self.policeSize = 15;
+    UITapGestureRecognizer *tapUp = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(sizeUp)];
+    [buttonSizeUp addGestureRecognizer:tapUp];
+    
+    UITapGestureRecognizer *tapDown = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(sizeDown)];
+    [buttonSizeDown addGestureRecognizer:tapDown];
     
     // webview
     webView.delegate = (id<UIWebViewDelegate>)self;
@@ -65,8 +72,6 @@
     
     
     // Requète + Paramètres
-    
-    NSLog(@"RELOAD");
     
     NSString *newsID = self.model[@"id"];
     
@@ -126,11 +131,12 @@
     NSString *initialHTMLString = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:&error];
     
     NSString *titleString = self.newsDetail[@"title"];
-    NSString *dateString = self.newsDetail[@"date"];
+    NSString *dateString = [[NSString stringWithFormat:@"%@ %@", [DateHelper dateFormat:self.newsDetail[@"date"]], self.newsDetail[@"hour"]] capitalizedString];
     NSString *chapoString = self.newsDetail[@"chapo"];
     NSString *htmlString = self.newsDetail[@"description"];
     NSString *authorString = self.newsDetail[@"author"];
     NSString *imgString = self.newsDetail[@"img"];
+    NSString *sizeString = [NSString stringWithFormat:@"%d", self.policeSize] ;
     
     initialHTMLString = [initialHTMLString stringByReplacingOccurrencesOfString:@"%%%title%%%" withString:titleString];
     initialHTMLString = [initialHTMLString stringByReplacingOccurrencesOfString:@"%%%date%%%" withString:dateString];
@@ -138,9 +144,11 @@
     initialHTMLString = [initialHTMLString stringByReplacingOccurrencesOfString:@"%%%html%%%" withString:htmlString];
     initialHTMLString = [initialHTMLString stringByReplacingOccurrencesOfString:@"%%%author%%%" withString:authorString];
     initialHTMLString = [initialHTMLString stringByReplacingOccurrencesOfString:@"%%%img%%%" withString:imgString];
+    initialHTMLString = [initialHTMLString stringByReplacingOccurrencesOfString:@"%%%size%%%" withString:sizeString];
     
     initialHTMLString = [initialHTMLString stringByReplacingOccurrencesOfString:@"%%%diapo%%%" withString:@""];
-
+    initialHTMLString = [initialHTMLString stringByReplacingOccurrencesOfString:@"%%%more-news%%%" withString:@""];
+    
     while ([self stringBetweenString:@"[idVideo]" andString:@"[/idVideo]" in:initialHTMLString]) {
         NSString *videoID = [self stringBetweenString:@"[idVideo]" andString:@"[/idVideo]" in:initialHTMLString];
         NSString *videoIdLoc = [NSString stringWithFormat:@"[idVideo]%@[/idVideo]",videoID];
@@ -218,5 +226,44 @@
                      }];
 }
 
+- (BOOL)webView:(UIWebView *)webView shouldStartLoadWithRequest:(NSURLRequest *)request navigationType:(UIWebViewNavigationType)navigationType {
+    
+    if (navigationType == UIWebViewNavigationTypeLinkClicked){
+        NSString *requestString = [request.URL absoluteString];
+        if ([self string:requestString containsString:@"http://api.programme-tv.net/1326279455-10/getNews/?id"]) {
+            [self loadNewsDetail:[request.URL absoluteString]];
+        } else {
+            [[UIApplication sharedApplication] openURL:[request URL]];
+        }
+        return NO;
+    }
+    
+    return YES;
+}
+
+- (BOOL)string:(NSString*)bigString containsString:(NSString*)smallString
+{
+    NSRange isRange = [bigString rangeOfString:smallString];
+    if(isRange.location != NSNotFound) {
+        return YES;
+    }
+    return NO;
+}
+
+-(void)sizeUp {
+    if (self.policeSize < 24) {
+        NSString *jsPrintHeadOfTable=[[NSString alloc]initWithFormat:@"changeFontSize('content','+2')"];
+        [webView stringByEvaluatingJavaScriptFromString:jsPrintHeadOfTable];
+        self.policeSize += 2;
+    }
+}
+
+-(void)sizeDown {
+    if (self.policeSize > 10) {
+        NSString *jsPrintHeadOfTable=[[NSString alloc]initWithFormat:@"changeFontSize('content','-2')"];
+        [webView stringByEvaluatingJavaScriptFromString:jsPrintHeadOfTable];
+        self.policeSize -= 2;
+    }
+}
 
 @end

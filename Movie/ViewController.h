@@ -12,11 +12,16 @@
 @interface ViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 {
     IBOutlet UITableView *newsListTableView;
+    IBOutlet UIView *loadingView;
     IBOutlet UIView *footerView;
     IBOutlet UIButton *buttonLoadMore;
+    IBOutlet UIActivityIndicatorView *spinner;
+    IBOutlet UIActivityIndicatorView *spinnerfooter;
 
 }
 @property (nonatomic, strong) IBOutlet MKHorizMenu *horizMenu;
 @property (nonatomic, strong) NSArray* model;
+
+@property (nonatomic, strong) UIRefreshControl* refreshControl;
 
 @end

@@ -8,6 +8,7 @@
 
 #import "ViewController.h"
 #import "NewsListCell.h"
+#import "NewsListBigCell.h"
 #import "MKHorizMenu.h"
 #import "NewsDetailVC.h"
 
@@ -26,19 +27,26 @@
 {
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
+    
+    loadingView.alpha = 0.0f;
 
+    
     self.view.backgroundColor = PATTERN(@"LightGreyBg");
     
     newsListTableView.delegate = self;
     newsListTableView.dataSource = self;
     
     [self.navigationController.navigationBar setHidden:YES];
+        
+    self.refreshControl = [[UIRefreshControl alloc] init];
+    [self.refreshControl addTarget:self action:@selector(refreshData) forControlEvents:UIControlEventValueChanged];
+    [newsListTableView addSubview:self.refreshControl];
     
     // Footer View
-    // footerView.hidden = YES;
     newsListTableView.tableFooterView = footerView;
     newsListTableView.tableFooterView.backgroundColor = PATTERN(@"CellViewNewsBg");
     [buttonLoadMore addTarget:self action:@selector(loadMore) forControlEvents:UIControlEventTouchUpInside];
+    [spinner setHidden:YES];
     
     // horizontal menu
     self.selectedIndex = 0;
@@ -46,9 +54,15 @@
     [self.horizMenu reloadData];
     UIButton *thisButton = (UIButton*) [self.horizMenu viewWithTag:self.selectedIndex + kButtonBaseTag];
     thisButton.selected = YES;
-
-    [self loadNewsList:16];
     
+    [self initialLoad];
+}
+
+- (void)initialLoad
+{
+    loadingView.alpha = 1.0f;
+    [spinner startAnimating];
+    [self loadNewsList:16];
 }
 
 - (void)loadMore
@@ -67,10 +81,11 @@
     
     [self.operation cancel];
     self.operation = nil;
+
+    [spinnerfooter startAnimating];
+    [spinnerfooter setHidden:NO];
     
     // Requète + Paramètres
-    
-    NSLog(@"RELOAD");
     
     NSString *url = [API newsListCount:@(count) category:@(self.selectedIndex)];
     
@@ -86,9 +101,7 @@
         
         [this loadDataNewsListCompletion:completedOp.responseString];
         
-        
     } errorHandler:^(MKNetworkOperation *completedOperation, NSError *error) {
-        
     }];
     
     [[NetworkEngine shared] enqueueOperation:self.operation forceReload:YES];
@@ -97,7 +110,39 @@
 
 - (void)loadDataNewsListCompletion:(NSString *)jsonString
 {
-    self.model = [API parseNewsList:jsonString];
+    loadingView.alpha = 0.0f;
+    [spinnerfooter stopAnimating];
+    [spinner stopAnimating];
+    [spinner setHidden:YES];
+    [self.refreshControl endRefreshing];
+    
+    NSArray *apiArray = [API parseNewsList:jsonString];
+    
+    NSMutableArray *myArray = [[NSMutableArray alloc] initWithCapacity:[apiArray count]];
+    
+    int j = 0;
+    int i = 1;
+    
+    while (j < 2) {
+        for (NSDictionary *myNews in apiArray) {
+            if (myNews[@"topNews"] && [myNews[@"topNews"]intValue] == i) {
+                [myArray addObject:myNews];
+                i++;
+            }
+        }
+        
+        if (i==3) break;
+        j++;
+    }
+    
+    for (NSDictionary *myNews in apiArray) {
+        if (!myNews[@"topNews"] || !([myNews[@"topNews"]intValue] == 1 || [myNews[@"topNews"]intValue] == 2)) {
+            [myArray addObject:myNews];
+        }
+    }
+
+    self.model = myArray;
+    
     [newsListTableView reloadData];
 }
 
@@ -117,14 +162,40 @@
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return 86.f;
+    NSDictionary *newsDetailDict = self.model[indexPath.row];
+    if(newsDetailDict[@"topNews"] && ([newsDetailDict[@"topNews"]intValue] == 1 || [newsDetailDict[@"topNews"]intValue] == 2)) {
+        return 125.f;
+    } else {
+        return 86.f;
+    }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    NSDictionary *newsDetailDict = self.model[indexPath.row];
+    
+    
+    if(newsDetailDict[@"topNews"] && ([newsDetailDict[@"topNews"]intValue] == 1 || [newsDetailDict[@"topNews"]intValue] == 2)) {
+        UIViewController *vc = [[UIViewController alloc] initWithNibName:@"NewsListBigCell" bundle:nil];
+        NewsListBigCell *cell = (NewsListBigCell *)vc.view;
+        cell.newsDetail = newsDetailDict;
+        cell.newsImageView.image = [UIImage imageNamed:@"VignetteNewsBigBg.png"];
+        [self downloadImageWithURL:[NSURL URLWithString:newsDetailDict[@"img"]] completionBlock:^(BOOL succeeded, UIImage *image) {
+            if (succeeded) {
+                cell.newsImageView.image = image;
+            }
+        }];
+        
+        if (indexPath.row == [self.model count]-1){
+            [self loadMore];
+        }
+        return cell;
+        
+    } else {
+        
+    }
     UIViewController *vc = [[UIViewController alloc] initWithNibName:@"NewsListCell" bundle:nil];
     NewsListCell *cell = (NewsListCell *)vc.view;
-    NSDictionary *newsDetailDict = self.model[indexPath.row];
     cell.newsDetail = newsDetailDict;
     cell.newsImageView.image = [UIImage imageNamed:@"VignetteNewsBg.png"];
     [self downloadImageWithURL:[NSURL URLWithString:newsDetailDict[@"img"]] completionBlock:^(BOOL succeeded, UIImage *image) {
@@ -163,27 +234,6 @@
     [self.navigationController pushViewController:vc animated:YES];
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
-/*
-- (void)scrollViewDidScroll:(UIScrollView *)aScrollView {
-    CGPoint offset = aScrollView.contentOffset;
-    CGRect bounds = aScrollView.bounds;
-    CGSize size = aScrollView.contentSize;
-    UIEdgeInsets inset = aScrollView.contentInset;
-    float y = offset.y + bounds.size.height - inset.bottom;
-    float h = size.height;
-    // NSLog(@"offset: %f", offset.y);
-    // NSLog(@"content.height: %f", size.height);
-    // NSLog(@"bounds.height: %f", bounds.size.height);
-    // NSLog(@"inset.top: %f", inset.top);
-    // NSLog(@"inset.bottom: %f", inset.bottom);
-    // NSLog(@"pos: %f of %f", y, h);
-    
-    float reload_distance = 10;
-    if(y > h + reload_distance) {
-        [self loadMore];
-    }
-}*/
-
 
 /*----------------------------------------------------------------------------*/
 #pragma mark - HorizMenu
@@ -194,26 +244,26 @@
     self.menuItems = [@[@"Tous", @"Cinéma", @"TV", @"Séries TV", @"Télé-Réalité", @"People", @"Buzz", @"Sport", @"Jeux vidéo"] mutableCopy];
 }
 
- - (UIImage *)selectedItemImageForMenu:(MKHorizMenu*)tabMenu
- {
- return STRETCH(@"category_item_selected_bg",6,0);
- }
- 
- - (UIColor *)labelColorForMenu:(MKHorizMenu *)tabMenu
- {
- return [UIColor whiteColor];
- }
- 
- - (UIColor *)labelSelectedColorForMenu:(MKHorizMenu *)tabMenu
- {
- return [UIColor whiteColor];
- }
- 
- - (UIColor *)labelHighlightedColorForMenu:(MKHorizMenu *)tabMenu
- {
- return [UIColor whiteColor];
- }
- 
+- (UIImage *)selectedItemImageForMenu:(MKHorizMenu*)tabMenu
+{
+    return STRETCH(@"category_item_selected_bg",6,0);
+}
+
+- (UIColor *)labelColorForMenu:(MKHorizMenu *)tabMenu
+{
+    return [UIColor whiteColor];
+}
+
+- (UIColor *)labelSelectedColorForMenu:(MKHorizMenu *)tabMenu
+{
+    return [UIColor whiteColor];
+}
+
+- (UIColor *)labelHighlightedColorForMenu:(MKHorizMenu *)tabMenu
+{
+    return [UIColor whiteColor];
+}
+
 - (UIFont*) labelFontForMenu:(MKHorizMenu*) tabMenu
 {
     return [UIFont boldSystemFontOfSize:12];
@@ -224,11 +274,11 @@
     return 20;
 }
 
- - (UIColor *)backgroundColorForMenu:(MKHorizMenu *)tabView
- {
- return  PATTERN(@"category_slidebar_bg");
- }
- 
+- (UIColor *)backgroundColorForMenu:(MKHorizMenu *)tabView
+{
+    return  PATTERN(@"category_slidebar_bg");
+}
+
 - (int)numberOfItemsForMenu:(MKHorizMenu *)tabView
 {
     return [self.menuItems count];
@@ -264,9 +314,9 @@
 - (void)horizMenu:(MKHorizMenu *)horizMenu itemSelectedAtIndex:(NSUInteger)index
 {
     self.selectedIndex = index;
-    [self loadNewsList:16];
+    [self initialLoad];
     [newsListTableView scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
-
+    
 }
 
 

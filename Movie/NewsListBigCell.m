@@ -1,19 +1,19 @@
 //
-//  NewsListCell.m
+//  NewsListBigCell.m
 //  Movie
 //
-//  Created by Nicolas ROY on 10/07/13.
+//  Created by Nicolas ROY on 11/07/13.
 //  Copyright (c) 2013 Nicolas Roy. All rights reserved.
 //
 
-#import "NewsListCell.h"
+#import "NewsListBigCell.h"
 
-@implementation NewsListCell
+@implementation NewsListBigCell
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated
 {
     [super setSelected:selected animated:animated];
-
+    
     // Configure the view for the selected state
 }
 
@@ -21,15 +21,15 @@
     [super setHighlighted:highlighted animated:animated];
     
     if (highlighted) {
-        self.backgroundColor = PATTERN(@"CellViewNewsBg_highlighted");
+        self.backgroundColor = PATTERN(@"CellViewNewsBigBg_highlighted");
         labelDate.textColor = [UIColor whiteColor];
         labelTitle.textColor = [UIColor whiteColor];
     } else {
-        self.backgroundColor = PATTERN(@"CellViewNewsBg");
+        self.backgroundColor = PATTERN(@"CellViewNewsBigBg");
         labelDate.textColor = COLOR_DARK_GRAY;
         labelTitle.textColor = COLOR_BLACK;
     }
-
+    
 }
 
 /*----------------------------------------------------------------------------*/
