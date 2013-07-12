@@ -81,7 +81,6 @@
 		B2F31000178EAACA00FD4CEE /* ActionIcon_TextSizeUp.png in Resources */ = {isa = PBXBuildFile; fileRef = B2F30FFA178EAACA00FD4CEE /* ActionIcon_TextSizeUp.png */; };
 		B2F31001178EAACA00FD4CEE /* ActionIcon_TextSizeUp@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B2F30FFB178EAACA00FD4CEE /* ActionIcon_TextSizeUp@2x.png */; };
 		B2F31005178ECA7A00FD4CEE /* DateHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = B2F31004178ECA7A00FD4CEE /* DateHelper.m */; };
-		B2F31008178ECC0600FD4CEE /* NewsListBigCell.m in Sources */ = {isa = PBXBuildFile; fileRef = B2F31007178ECC0500FD4CEE /* NewsListBigCell.m */; };
 		B2F3100A178ECC2B00FD4CEE /* NewsListBigCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = B2F31009178ECC2B00FD4CEE /* NewsListBigCell.xib */; };
 		B2F31013178ECDC800FD4CEE /* badgeTopNews.png in Resources */ = {isa = PBXBuildFile; fileRef = B2F3100B178ECDC800FD4CEE /* badgeTopNews.png */; };
 		B2F31014178ECDC800FD4CEE /* badgeTopNews@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = B2F3100C178ECDC800FD4CEE /* badgeTopNews@2x.png */; };
@@ -191,8 +190,6 @@
 		B2F30FFB178EAACA00FD4CEE /* ActionIcon_TextSizeUp@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "ActionIcon_TextSizeUp@2x.png"; sourceTree = "<group>"; };
 		B2F31003178ECA7A00FD4CEE /* DateHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateHelper.h; sourceTree = "<group>"; };
 		B2F31004178ECA7A00FD4CEE /* DateHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateHelper.m; sourceTree = "<group>"; };
-		B2F31006178ECC0500FD4CEE /* NewsListBigCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewsListBigCell.h; sourceTree = "<group>"; };
-		B2F31007178ECC0500FD4CEE /* NewsListBigCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewsListBigCell.m; sourceTree = "<group>"; };
 		B2F31009178ECC2B00FD4CEE /* NewsListBigCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = NewsListBigCell.xib; sourceTree = "<group>"; };
 		B2F3100B178ECDC800FD4CEE /* badgeTopNews.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = badgeTopNews.png; sourceTree = "<group>"; };
 		B2F3100C178ECDC800FD4CEE /* badgeTopNews@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "badgeTopNews@2x.png"; sourceTree = "<group>"; };
@@ -366,8 +363,6 @@
 				B2F30FBC178D8F7A00FD4CEE /* NewsListCell.h */,
 				B2F30FBD178D8F7A00FD4CEE /* NewsListCell.m */,
 				B2F30FBF178D906B00FD4CEE /* NewsListCell.xib */,
-				B2F31006178ECC0500FD4CEE /* NewsListBigCell.h */,
-				B2F31007178ECC0500FD4CEE /* NewsListBigCell.m */,
 				B2F31009178ECC2B00FD4CEE /* NewsListBigCell.xib */,
 			);
 			name = NewsList;
@@ -594,7 +589,6 @@
 				B2F30FC4178D979400FD4CEE /* MKHorizMenu.m in Sources */,
 				B2F30FD2178D9F4200FD4CEE /* NewsDetailVC.m in Sources */,
 				B2F31005178ECA7A00FD4CEE /* DateHelper.m in Sources */,
-				B2F31008178ECC0600FD4CEE /* NewsListBigCell.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

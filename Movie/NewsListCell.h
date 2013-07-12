@@ -17,4 +17,6 @@
 @property (nonatomic, strong) NSDictionary *newsDetail;
 @property (strong, nonatomic) IBOutlet UIImageView *newsImageView;
 
+@property (nonatomic) BOOL isTop;
+
 @end

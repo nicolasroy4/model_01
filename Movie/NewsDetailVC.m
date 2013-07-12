@@ -156,8 +156,20 @@
         initialHTMLString = [initialHTMLString stringByReplacingOccurrencesOfString:videoIdLoc withString:videoUrls[videoID]];
     }
     
+    while ([self stringBetweenString:@"[videoExterne]" andString:@"[/videoExterne]" in:initialHTMLString]) {
+        NSString *videotype = [self stringBetweenString:@"[videoExterne]" andString:@"_" in:initialHTMLString];
+        NSString *videoID = [self stringBetweenString:@"_" andString:@"[/videoExterne]" in:initialHTMLString];
+        NSString *videoIdLoc = [NSString stringWithFormat:@"[videoExterne]%@_%@[/videoExterne]",videotype, videoID];
+        NSDictionary *videoTypesUrls = self.newsDetail[@"videosExternes"];
+        NSDictionary *videoUrls = videoTypesUrls[videotype];
+
+        initialHTMLString = [initialHTMLString stringByReplacingOccurrencesOfString:videoIdLoc withString:videoUrls[videoID]];
+    }
+    
     [webView loadHTMLString:initialHTMLString baseURL:nil];
 }
+
+
 
 -(NSString*)stringBetweenString:(NSString*)start andString:(NSString*)end in:(NSString*)myString{
     NSScanner* scanner = [NSScanner scannerWithString:myString];

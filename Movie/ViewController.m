@@ -8,7 +8,6 @@
 
 #import "ViewController.h"
 #import "NewsListCell.h"
-#import "NewsListBigCell.h"
 #import "MKHorizMenu.h"
 #import "NewsDetailVC.h"
 
@@ -17,6 +16,7 @@
 @property (nonatomic, strong) MKNetworkOperation *operation;
 @property (nonatomic, strong) NSMutableArray *menuItems;
 @property (nonatomic) NSUInteger selectedIndex;
+@property (nonatomic, readonly) NSArray* topNewsArray;
 
 @end
 
@@ -29,7 +29,7 @@
 	// Do any additional setup after loading the view, typically from a nib.
     
     loadingView.alpha = 0.0f;
-
+    
     
     self.view.backgroundColor = PATTERN(@"LightGreyBg");
     
@@ -37,7 +37,7 @@
     newsListTableView.dataSource = self;
     
     [self.navigationController.navigationBar setHidden:YES];
-        
+    
     self.refreshControl = [[UIRefreshControl alloc] init];
     [self.refreshControl addTarget:self action:@selector(refreshData) forControlEvents:UIControlEventValueChanged];
     [newsListTableView addSubview:self.refreshControl];
@@ -81,7 +81,7 @@
     
     [self.operation cancel];
     self.operation = nil;
-
+    
     [spinnerfooter startAnimating];
     [spinnerfooter setHidden:NO];
     
@@ -107,6 +107,10 @@
     [[NetworkEngine shared] enqueueOperation:self.operation forceReload:YES];
 }
 
+-(NSArray *)topNewsArray
+{
+    return @[@1,@2];
+}
 
 - (void)loadDataNewsListCompletion:(NSString *)jsonString
 {
@@ -136,11 +140,11 @@
     }
     
     for (NSDictionary *myNews in apiArray) {
-        if (!myNews[@"topNews"] || !([myNews[@"topNews"]intValue] == 1 || [myNews[@"topNews"]intValue] == 2)) {
+        if (!myNews[@"topNews"] || !([self.topNewsArray containsObject:myNews[@"topNews"]])) {
             [myArray addObject:myNews];
         }
     }
-
+    
     self.model = myArray;
     
     [newsListTableView reloadData];
@@ -163,7 +167,7 @@
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSDictionary *newsDetailDict = self.model[indexPath.row];
-    if(newsDetailDict[@"topNews"] && ([newsDetailDict[@"topNews"]intValue] == 1 || [newsDetailDict[@"topNews"]intValue] == 2)) {
+    if(newsDetailDict[@"topNews"] && ([self.topNewsArray containsObject:newsDetailDict[@"topNews"]])) {
         return 125.f;
     } else {
         return 86.f;
@@ -173,59 +177,22 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSDictionary *newsDetailDict = self.model[indexPath.row];
+    BOOL isTop = (newsDetailDict[@"topNews"] && ([self.topNewsArray containsObject:newsDetailDict[@"topNews"]]));
     
-    
-    if(newsDetailDict[@"topNews"] && ([newsDetailDict[@"topNews"]intValue] == 1 || [newsDetailDict[@"topNews"]intValue] == 2)) {
-        UIViewController *vc = [[UIViewController alloc] initWithNibName:@"NewsListBigCell" bundle:nil];
-        NewsListBigCell *cell = (NewsListBigCell *)vc.view;
-        cell.newsDetail = newsDetailDict;
-        cell.newsImageView.image = [UIImage imageNamed:@"VignetteNewsBigBg.png"];
-        [self downloadImageWithURL:[NSURL URLWithString:newsDetailDict[@"img"]] completionBlock:^(BOOL succeeded, UIImage *image) {
-            if (succeeded) {
-                cell.newsImageView.image = image;
-            }
-        }];
-        
-        if (indexPath.row == [self.model count]-1){
-            [self loadMore];
-        }
-        return cell;
-        
-    } else {
-        
-    }
-    UIViewController *vc = [[UIViewController alloc] initWithNibName:@"NewsListCell" bundle:nil];
+    UIViewController *vc;
+    if (isTop) vc = [[UIViewController alloc] initWithNibName:@"NewsListBigCell" bundle:nil];
+    else vc = [[UIViewController alloc] initWithNibName:@"NewsListCell" bundle:nil];
+
     NewsListCell *cell = (NewsListCell *)vc.view;
     cell.newsDetail = newsDetailDict;
-    cell.newsImageView.image = [UIImage imageNamed:@"VignetteNewsBg.png"];
-    [self downloadImageWithURL:[NSURL URLWithString:newsDetailDict[@"img"]] completionBlock:^(BOOL succeeded, UIImage *image) {
-        if (succeeded) {
-            cell.newsImageView.image = image;
-        }
-    }];
     
+        
     if (indexPath.row == [self.model count]-1){
         [self loadMore];
     }
     return cell;
-}
 
-- (void)downloadImageWithURL:(NSURL *)url completionBlock:(void (^)(BOOL succeeded, UIImage *image))completionBlock
-{
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
-    [NSURLConnection sendAsynchronousRequest:request
-                                       queue:[NSOperationQueue mainQueue]
-                           completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
-                               if ( !error )
-                               {
-                                   UIImage *image = [[UIImage alloc] initWithData:data];
-                                   completionBlock(YES,image);
-                               } else{
-                                   completionBlock(NO,nil);
-                               }
-                           }];
 }
-
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -289,28 +256,6 @@
     return [self.menuItems objectAtIndex:index];
 }
 
-/* - (void)scrollViewDidScroll:(UIScrollView *)scrollView
- {
- CGFloat cX = scrollView.contentOffset.x;
- CGFloat cW = scrollView.contentSize.width;
- CGFloat sW = scrollView.frame.size.width;
- CGFloat offset = 8.f;
- 
- BOOL left  = (cX <= offset);
- BOOL right = (cW-(cX+sW) < offset);
- 
- [UIView
- animateWithDuration:0.2
- delay:0
- options:UIViewAnimationOptionBeginFromCurrentState
- animations:^{
- fadeLeft.alpha  = (left)  ? 0.0 : 1.0;
- fadeRight.alpha = (right) ? 0.0 : 1.0;
- 
- } completion:NULL];
- }
- */
-
 - (void)horizMenu:(MKHorizMenu *)horizMenu itemSelectedAtIndex:(NSUInteger)index
 {
     self.selectedIndex = index;
@@ -318,6 +263,5 @@
     [newsListTableView scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
     
 }
-
 
 @end
