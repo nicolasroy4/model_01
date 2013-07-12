@@ -49,9 +49,6 @@
     labelDate.text = [[NSString stringWithFormat:@"%@ %@", [DateHelper dateFormat:myNews[@"date"]], myNews[@"hour"]] capitalizedString];
     labelTitle.text = myNews[@"title"];
     
-    if (self.isTop) self.newsImageView.image = [UIImage imageNamed:@"VignetteNewsBigBg.png"];
-    else self.newsImageView.image = [UIImage imageNamed:@"VignetteNewsBg.png"];
-    
     [self downloadImageWithURL:[NSURL URLWithString:myNews[@"img"]] completionBlock:^(BOOL succeeded, UIImage *image) {
         if (succeeded) {
             self.newsImageView.image = image;
