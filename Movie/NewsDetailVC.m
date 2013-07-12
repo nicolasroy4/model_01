@@ -53,6 +53,15 @@
     webView.delegate = (id<UIWebViewDelegate>)self;
 }
 
+
+-(void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    
+    webView.delegate = nil;
+}
+
+
 - (void)loadPrevNews
 {
     [self loadNewsDetail:self.newsDetail[@"prev"]];
@@ -157,9 +166,11 @@
     }
     
     while ([self stringBetweenString:@"[videoExterne]" andString:@"[/videoExterne]" in:initialHTMLString]) {
-        NSString *videotype = [self stringBetweenString:@"[videoExterne]" andString:@"_" in:initialHTMLString];
-        NSString *videoID = [self stringBetweenString:@"_" andString:@"[/videoExterne]" in:initialHTMLString];
+        NSString *videoType_ID = [self stringBetweenString:@"[videoExterne" andString:@"/videoExterne]" in:initialHTMLString];
+        NSString *videotype = [self stringBetweenString:@"]" andString:@"_" in:videoType_ID];
+        NSString *videoID = [self stringBetweenString:@"_" andString:@"[" in:videoType_ID];
         NSString *videoIdLoc = [NSString stringWithFormat:@"[videoExterne]%@_%@[/videoExterne]",videotype, videoID];
+
         NSDictionary *videoTypesUrls = self.newsDetail[@"videosExternes"];
         NSDictionary *videoUrls = videoTypesUrls[videotype];
 

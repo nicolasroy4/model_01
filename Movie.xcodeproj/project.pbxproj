@@ -359,7 +359,7 @@
 			children = (
 				37987BF11763AB2D002BB87F /* ViewController.h */,
 				37987BF21763AB2D002BB87F /* ViewController.m */,
-				37987BF41763AB2D002BB87F /* ViewController.xib */,
+				B2F3101B178FFF6B00FD4CEE /* New Group */,
 				B2F30FBC178D8F7A00FD4CEE /* NewsListCell.h */,
 				B2F30FBD178D8F7A00FD4CEE /* NewsListCell.m */,
 				B2F30FBF178D906B00FD4CEE /* NewsListCell.xib */,
@@ -450,6 +450,14 @@
 				B2F31004178ECA7A00FD4CEE /* DateHelper.m */,
 			);
 			name = Helpers;
+			sourceTree = "<group>";
+		};
+		B2F3101B178FFF6B00FD4CEE /* New Group */ = {
+			isa = PBXGroup;
+			children = (
+				37987BF41763AB2D002BB87F /* ViewController.xib */,
+			);
+			name = "New Group";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

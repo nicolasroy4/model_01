@@ -17,6 +17,8 @@
 @property (nonatomic, strong) NSMutableArray *menuItems;
 @property (nonatomic) NSUInteger selectedIndex;
 @property (nonatomic, readonly) NSArray* topNewsArray;
+@property (nonatomic) BOOL isLoadable;
+@property (nonatomic) BOOL newSection;
 
 @end
 
@@ -28,7 +30,6 @@
     [super viewDidLoad];
 	// Do any additional setup after loading the view, typically from a nib.
     
-    loadingView.alpha = 0.0f;
     
     
     self.view.backgroundColor = PATTERN(@"LightGreyBg");
@@ -43,8 +44,7 @@
     [newsListTableView addSubview:self.refreshControl];
     
     // Footer View
-    newsListTableView.tableFooterView = footerView;
-    newsListTableView.tableFooterView.backgroundColor = PATTERN(@"CellViewNewsBg");
+    footerView.backgroundColor = PATTERN(@"CellViewNewsBg");
     [buttonLoadMore addTarget:self action:@selector(loadMore) forControlEvents:UIControlEventTouchUpInside];
     [spinner setHidden:YES];
     
@@ -55,6 +55,9 @@
     UIButton *thisButton = (UIButton*) [self.horizMenu viewWithTag:self.selectedIndex + kButtonBaseTag];
     thisButton.selected = YES;
     
+    loadingView.alpha = 0.0f;
+    self.isLoadable = YES;
+    self.newSection = YES;
     [self initialLoad];
 }
 
@@ -77,6 +80,9 @@
 
 - (void)loadNewsList:(NSInteger)count
 {
+ 
+    if (self.isLoadable == NO) return;
+        
     // Arrêt des opérations en cours
     
     [self.operation cancel];
@@ -102,6 +108,7 @@
         [this loadDataNewsListCompletion:completedOp.responseString];
         
     } errorHandler:^(MKNetworkOperation *completedOperation, NSError *error) {
+        this.isLoadable = YES;
     }];
     
     [[NetworkEngine shared] enqueueOperation:self.operation forceReload:YES];
@@ -145,14 +152,34 @@
         }
     }
     
-    self.model = myArray;
+    if ([self.model count] == [myArray count] && self.newSection == NO)
+    {
+        self.isLoadable = NO;
+        
+    } else {
+        self.model = myArray;
+        [newsListTableView reloadData];
+        self.isLoadable = YES;
+    }
     
-    [newsListTableView reloadData];
+    self.newSection = NO;
 }
 
 /*----------------------------------------------------------------------------*/
 #pragma mark - TableView
 /*----------------------------------------------------------------------------*/
+
+- (void)setIsLoadable:(BOOL)isLoadable
+{
+    
+    if (isLoadable) {
+        newsListTableView.tableFooterView = footerView;
+    } else {
+        newsListTableView.tableFooterView = nil;
+    }
+    
+    _isLoadable = isLoadable;
+}
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
@@ -259,6 +286,8 @@
 - (void)horizMenu:(MKHorizMenu *)horizMenu itemSelectedAtIndex:(NSUInteger)index
 {
     self.selectedIndex = index;
+    self.newSection = YES;
+    self.isLoadable = YES;
     [self initialLoad];
     [newsListTableView scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:YES];
     
